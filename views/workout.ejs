@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+   
+    
+<link href="/stylesheets/bootstrap-icons.min.css" rel="stylesheet">
+<script src="/javascripts/color-modes.js"></script>
+<link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+<script src="/javascripts/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="/stylesheets/carousel.css">
+
+  </head>
+  <title>Workout page</title>
+  <body>
+    <% include ./partial/navbar %>
+    <main>
+        <div class="container-fluid mt-5">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-3 border border-2 border-primary mt-5">
+                    <img src="<%= workout.cover %>" class="img-fluid" alt="" style="max-height: 400px"/>
+                    <h3 class="text-primary text-center"><%= workout.title %></h3>
+                    <p>Type: <%= workout.type %></p>
+                    <p> <%= workout.description %></p>
+                    <p>Total Day: <%= challenges.length %></p>
+                    <p>Createdby: <%= workout.createdBy.name %></p>
+                    <% if(locals.user) {%>
+                      <% if(locals.user.activeWorkout){%>
+                        <% if(locals.user.activeWorkout == workout._id){%>
+                         <p>Current active Workout</p>
+                        <%}else{%>
+                        <p>Other workout active</p>
+                        <%}%>
+                     <%}else{%>
+                      <button class="btn btn-primary" onclick="activeWorkout('<%= workout._id%>')">Start Challenge</button>
+                    <%}%>
+                      
+                    <%}else{%>
+                      <a href="/login" class="btn btn-warning">need to login for challenges</a>
+                    <%}%>
+                  
+                        
+                </div>
+                    <div class="col-sm-12 col-md-12 col-lg-9 mt-3">
+                      <h1 class="text-center text-primary">Challenge</h1>
+                      <div class="list-group">
+                        <% for(var i=0;i<challenges.length;i++) {%>
+                        <a href="/challenge/<%=challenges[i]._id%>" class="list-group-item list-group-item-action <%= 
+                        locals.user ? locals.user.activeWorkout == workout._id ?'':'disabled':'disabled' %>
+                        <%= locals.user ? locals.user.currentDay == challenges[i].day && locals.user.activeWorkout == workout._id  ?'active':'':'' %>" 
+                        aria-current="true">
+                          <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Day:<%=challenges[i].day %></h5>
+                            
+                          </div>
+                          <p class="mb-1">Title:<%= challenges[i].title %></p>
+                          <p class="mb-1">Description:<%= challenges[i].description %></p>
+                        </a>
+                        <%}%>
+                      </div>
+                      </div>
+                      
+                    </div> 
+            </div>
+            </div>
+        </div>
+    </main>
+    <% include ./partial/footer %>
+
+  
+  </body>
+  <script src="/javascripts/jquery-3.7.0.min.js"></script>
+  <script>
+    function activeWorkout(id){
+    $.ajax("/users/active",{
+        type:"POST",
+        data:{id:id},
+        success:function (result){
+            if(result.status){
+               location.reload();
+            }else{
+                alert("Something was wrong");
+                
+            }
+        },
+      
+    });
+    }
+  </script>
+
+</html>
